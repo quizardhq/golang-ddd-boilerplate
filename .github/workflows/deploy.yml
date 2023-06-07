@@ -1,0 +1,35 @@
+name: Deploy to Heroku
+
+on:
+  push:
+    branches:
+      - main  # Change this to your main branch name
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+
+      - name: Login to Heroku Container Registry
+        run: echo "$HEROKU_API_KEY" | docker login --username=_ --password-stdin registry.heroku.com
+
+      - name: Build and Push Docker image
+        run: |
+          docker buildx create --use
+          docker buildx build --platform linux/amd64 --tag registry.heroku.com/<your-app-name>/web --push .
+
+      - name: Configure Heroku CLI
+        run: curl https://cli-assets.heroku.com/install.sh | sh
+
+      - name: Deploy to Heroku
+        env:
+          HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
+          HEROKU_APP_NAME: <your-app-name>
+        run: |
+          heroku container:release web -a $HEROKU_APP_NAME
