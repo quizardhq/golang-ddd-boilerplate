@@ -33,8 +33,30 @@ This boilerplate is using the following techs:
 
 2. Run it
 ```shell
-  $ docker run --env-file .env --net=host quizardhq/ddd_microservice
+  $ docker run --env-file .env --net=host golang-ddd-template
 ```
 
 ## Deploy app to heroku
+
+Auto-deployment has been set up using github workflow to push a container to heroku. If you decide to deploy via heroku cli, see the steps below.
+
+1. Login to heroku
+```shell
+$ heroku login
+```
+
+2. Create an application (if none exists)
+```shell
+$ heroku apps:create your-app-name
+```
+
+3. Dockerize and push container to heroku container registry
+```shell
+$ heroku container:push web --app your-app-name
+```
+
+4. Release container to your newly created application
+```shell
+$ heroku container:release web --app your-app-name
+```
 https://devcenter.heroku.com/articles/build-docker-images-heroku-yml
